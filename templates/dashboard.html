@@ -1,0 +1,113 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>{% block title %}{% endblock %}Dashboard</title>
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Navbar</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="javascript:location='/'">Web Logical Bug Fuzzer</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="javascript:location='/'">TARGET ROOM</a></li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xl">
+        <div>
+          <ul class="list-group">
+            <h3>Logical Bug Fuzzer Crash</h3>
+            {% for url in crash %}
+              <li class="list-group-item">
+                {{url}}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>      
+        <div class="col-xl">
+          <div>
+            <ul class="list-group">
+              <h3>Security Check</h3>
+              {% for url, secS in sec.items() %}
+                <li class="list-group-item">
+                  {{url}}
+                  {% for secSK, secSV in secS.items() %}
+                    {% for ek, ev in secSV.items() %}
+                        {% if ek != "Content-Security-Policy"%}
+                          <span class="badge badge-pill badge-warning" style="background-color: rgb(248, 226, 26); color: black">{{ek}}:{{ev}}</span> <br>
+                        {% endif %}
+                    {% endfor %}
+                  {% endfor %} 
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+      </div>
+      <div class="col-xl">
+        <div>
+          <ul class="list-group">
+            <h3>Logical bug Inner Script Gadgets</h3>
+            {% for _lis in lis %}
+              {% if _lis.find('window') != -1 %}
+              <span class="badge badge-pill badge-warning" style="background-color: rgb(248, 26, 111); color: rgb(255, 255, 255)">{{_lis[_lis.find('[host]'):(_lis.find('[/host]'))]}}</span> <br>
+                <pre>
+                  <code>
+                    {{_lis}}
+                  </code>
+                </pre>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+    </div>
+      <div class="col-xl">
+          <div>
+            <ul class="list-group">
+              <h3>Logical Origin URL</h3>
+              {% for _oul in oul %}
+              <li class="list-group-item">{{_oul}}</li>
+              {% endfor %}
+            </ul>
+          </div>
+      </div>
+      <div class="col-xl">
+          <div>
+            <ul class="list-group">
+              <h3>Logical Origin URL source</h3>
+              {% for _ouls in ouls %}
+              <li class="list-group-item">{{_ouls}}</li>
+              {% endfor %}
+            </ul>
+          </div>
+      </div>
+      <div class="col-xl">
+          <div>
+            <ul class="list-group">
+              <h3>Logical Origin URL Extenstion</h3>
+              {% for _oule in oule %}
+              <li class="list-group-item">{{_oule}}</li>
+              {% endfor %}
+            </ul>
+          </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+

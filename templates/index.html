@@ -1,0 +1,34 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>{% block title %}{% endblock %}TargetRoom</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h3>Web LogicalBug Helper</h3>
+          <form action="http://localhost:8000/dashboard" method="POST">
+            <div class="form-group">
+                <label for="method">method</label>
+                <input type="text" class="form-control" name="method" placeholder="only POST, GET"/>
+            </div>
+            <div class="form-group">
+                <label for="schema">schema</label>
+                <input type="text" class="form-control" name="schema" placeholder="only http, https"/>
+            </div>
+            <div class="form-group">
+              <label for="host">host</label>
+              <input type="text" class="form-control" name="host" placeholder="example.com"/>
+            </div>
+            <div class="form-group">
+                <label for="p_data">parms</label>
+                <input type="text" class="form-control" name="p_data" placeholder="data=data&data1=data1"/>
+            </div>
+
+            <input type="submit" value="submit" class="btn btn-primary"/>
+          </form>
+    </div>
+{% endblock %}
+
+
