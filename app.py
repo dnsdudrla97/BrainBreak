@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from flask import Flask, request, render_template, redirect
 from flask_bootstrap import Bootstrap
-import os, pickle, base64
+import os, pickle, base64, time
 import CXX
 import PTP
+import TNT
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -63,7 +64,15 @@ def dashboard():
         target_url_host = schema + "://" + host
         target_url_full = target_url_host + "/"+ data
 
-        cxx = CXX.CXX(TARGET_URL=target_url_host)
+
+        # tor relay chain connection
+        tnt = TNT.TNT()
+        # tnt.relay()
+        time.sleep(0.5)
+        # assert tor_proc.is_alive(), "Tor is not running"
+
+
+        cxx = CXX.CXX(TARGET_URL=target_url_host, TARGET_METHOD=method)
         if cxx is None:
             return redirect(location='/')
 
@@ -80,7 +89,6 @@ def dashboard():
         # SECURITY, ENV key parser URL_SECURITY_STRUCT
         security_check = cxx.URL_SECURITY_STRUCT
 
-        
         # logical bug innerscript
         logicalbug_inner_script = (cxx.URL_INNER_SCRIPT).split("[**]")
 
@@ -105,4 +113,4 @@ def dashboard():
 
 
 
-app.run(host='0.0.0.0', port=8000)
+app.run(host='127.0.0.1', port=8000)

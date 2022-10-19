@@ -11,6 +11,11 @@ class PTP():
         self.testcase = list()
         self.crashCount = 0
         self.crash = list()
+        self.PROXIES = {
+            'http': 'socks5h://127.0.0.1:9050',
+            'https': 'socks5h://127.0.0.1:9050'
+        }
+
     
     # seed pool
     def seed_pool(self):
@@ -54,11 +59,11 @@ class PTP():
         for tc in self.testcase:
             try:
                 if self.OriginMethod == "GET":
-                    r = requests.get(tc)
+                    r = requests.get(tc, proxies=self.PROXIES)
                 elif self.OriginMethod == "POST":
-                    r = requests.post(tc)
+                    r = requests.post(tc, proxies=self.PROXIES)
                 else:
-                    r = requests.options(tc)
+                    r = requests.options(tc, proxies=self.PROXIES)
                 if r.status_code != 200:
                     print(f"[*] COUNT:{str(self.crashCount)}")
                     print(f"[!!{r.status_code}]{tc}is vulnerable")
