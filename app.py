@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 from flask import Flask, request, render_template, redirect
 from flask_bootstrap import Bootstrap
-import os, pickle, base64, time
+import os
+import pickle
+import base64
+import time
 import CXX
 import PTP
 import TNT
@@ -12,11 +15,12 @@ app.secret_key = os.urandom(32)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 try:
-    FLAG = open('./flag.txt', 'r').read() # Flag is here!!
+    FLAG = open('./flag.txt', 'r').read()  # Flag is here!!
 except:
     FLAG = '[**FLAG**]'
 
 INFO = ['name', 'userid', 'password']
+
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
@@ -24,6 +28,8 @@ def main():
         return render_template("index.html")
     elif request.method == "POST":
         return render_template("index.html")
+
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if request.method == "GET":
@@ -62,15 +68,13 @@ def dashboard():
                 else:
                     data = (_rv)
         target_url_host = schema + "://" + host
-        target_url_full = target_url_host + "/"+ data
-
+        target_url_full = target_url_host + "/" + data
 
         # tor relay chain connection
         tnt = TNT.TNT()
         # tnt.relay()
         time.sleep(0.5)
         # assert tor_proc.is_alive(), "Tor is not running"
-
 
         cxx = CXX.CXX(TARGET_URL=target_url_host, TARGET_METHOD=method)
         if cxx is None:
@@ -79,13 +83,11 @@ def dashboard():
         cxx.get_all_url_parse()
         cxx.cehck_method()
         cxx.inner_script_gadget()
-        
-               
+
         origin_url_list = (cxx.URL_TEXT).split("\n")
         origin_url_source_list = (cxx.URL_SOURCE_TEXT).split("\n")
         origin_url_ext_list = (cxx.URL_ASSET_TEXT).split("\n")
 
-        
         # SECURITY, ENV key parser URL_SECURITY_STRUCT
         security_check = cxx.URL_SECURITY_STRUCT
 
@@ -99,18 +101,27 @@ def dashboard():
 
         crash = ptp.crash
 
+        # CSV file Write => COL (host, crash, logicalbug_inner_script, security_cehck, origin_url_list, origin_url_source_list, origin_url_ext_list)
+
+        _now = time.localtime()
+        output_path = f"{host}-{_now.tm_year}{_now.tm_mon}{_now.tm_mday}{_now.tm_sec}.csv"
+
+        
+
+        # write
+        with open(f"db/{output_path}", "wa") as f:
+            f.write()
 
         return render_template(
             template_name_or_list="dashboard.html",
-            crash = crash,
-            lis = logicalbug_inner_script,
-            sec = security_check,
+            OnionTarget=host,
+            crash=crash,
+            lis=logicalbug_inner_script,
+            sec=security_check,
             oul=origin_url_list,
             ouls=origin_url_source_list,
             oule=origin_url_ext_list
         )
-        # return "zer0luck"
-
 
 
 app.run(host='127.0.0.1', port=8000)

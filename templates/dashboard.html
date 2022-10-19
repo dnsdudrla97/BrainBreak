@@ -2,7 +2,7 @@
 
 {% block head %}
     {{ super() }}
-    <title>{% block title %}{% endblock %}Dashboard</title>
+    <title>{% block title %}{% endblock %}% Target %</title>
 {% endblock %}
 
 {% block navbar %}
@@ -28,6 +28,7 @@
 {% endblock %}
 {% block content %}
   <div class="container">
+    <h1>{% OnionTarget %}</h1>
     <div class="row">
       <div class="col-xl">
         <div>

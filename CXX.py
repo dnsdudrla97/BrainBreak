@@ -4,6 +4,7 @@ import signal
 import sys
 import os
 import re
+import urllib
 from bs4 import BeautifulSoup
 
 
@@ -156,12 +157,13 @@ class CXX:
             pass
 
     # requests response text find regex pattern
+    # onion url = s4k4ceiapwwgcm3mkb6e4diqecpo7kvdnfr5gg7sph7jjppqkvwwqtyd.onion
     def keyword_check_gadget(self, _url):
         regex_telegram = r'''(?:@|(?:(?:(?:https?://)?t(?:elegram)?)\.me\/))(\w{4,})$'''
         regex_bank = r'''^\d{5}\-\d{5}\-\d{3,12}$'''
         regex_number = r'''\\b[(0-9)]{10,20}\\b'''
         # string "call", "contact", "phone", "real money" regex pattern
-        regex_keyword = r'''(call|contact|phone|real money|)'''
+        regex_keyword = r'''(call|contact|phone|real money|drug)'''
         regex_email = r'''((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$'''
         regex_url = r'''(http(s)?:\/\/)([a-z0-9\w]+\.*)+[a-z0-9]{2,4}'''
 
@@ -174,13 +176,16 @@ class CXX:
 
         try:
             req = requests.get(_url, proxies=self.PROXIES)
-            print(re.search(regex_keyword, req.text))
-            if re.search(regex_keyword, req.text) is not None:
-                self.URL_KEYWORD_STRUCT[_url]["KEYWORD"] = re.search(
-                    regex_keyword, req.text).group()
-            else:
-                pass
-            print(self.URL_KEYWORD_STRUCT)
+            _content = req.text
+            _reSearchData = re.search(regex_keyword, _content)
+            # keyword check
+            if _reSearchData is not none:
+                # _reSearchData parser content
+                _reSearchData = _reSearchData.group()
+                print(_reSearchData)
+                
+            
+
             # print(req.text)
             # telegram
             # if re.search(regex_telegram, req.text):
@@ -289,7 +294,7 @@ class CXX:
                     if _j is not None:
                         # print(_j)
                         # print(self.schema_check(_j))
-                        current_url.append(self.schema_check('/'+_j))
+                        current_url.append(self.schema_check(_j))
 
             # href parser
             for link in soup.find_all('a'):
@@ -297,14 +302,53 @@ class CXX:
                 _f = link.get('href')
                 if _f is not None:
                     # print(self.schema_check(_f))
-                    current_url.append(self.schema_check('/'+_f))
+                    current_url.append(self.schema_check(_f))
 
             # multiple remove url
             current_url = list(set(current_url))
 
+            current_decode_url = []
+            # if url encode, decode url
+            for i in current_url:
+                try:
+                    # print(i)
+                    # print(urllib.parse.unquote(i))
+                    current_decode_url.append(urllib.parse.unquote(i))
+                except:
+                    current_decode_url.append(i)
+            
+            # multiple url search
+            http_cnt = 0
+            https_cnt = 0
+            
+            # counting http and https miu
+            for i in current_decode_url:
+                result = [(g.start(), g.group()) for g in re.compile(r'(http://|https://)').finditer(i)]
+                if len(result) > 1:
+                    for j in result:
+                        if j[1] == "http://":
+                            http_cnt += 1
+                        elif j[1] == "https://":
+                            https_cnt += 1
+
+                # counting check 
+                if (http_cnt > 1 or https_cnt > 1):
+                    for x in result:
+                        if (x[0] == 0):
+                            continue
+                        elif (x[0] > 1):
+                            current_decode_url.append(i[:x[0]])
+                            current_decode_url.append(i[x[0]:])
+                            current_decode_url.remove(i)
+                
+            
+            current_url = list(set(current_decode_url))
+    
             # check asset ext is in list
             for i in current_url:
-                block = i.split('.')
+                block = i.split(".")
+                print(i)
+                
                 for j in block:
                     if j in self.ASSET_EXT:
                         self.URL_ASSET_TEXT += f"{i}\n"
@@ -315,7 +359,7 @@ class CXX:
 
             for i in current_url:
                 print(i)
-                # self.keyword_check_gadget(i)
+                self.keyword_check_gadget(i)
                 self.URL_TEXT += i + "\n"
             print(f"====================== finish ======================")
         except Exception as e:
